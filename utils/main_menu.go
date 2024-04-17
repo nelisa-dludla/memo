@@ -14,6 +14,14 @@ func MainMenu() {
 	DrawTable(tasks)
 	// User options
 	var userInput int
+	if len(tasks) < 1 {
+	fmt.Print(`
+(1) Add Task
+
+(9) Exit Memo
+
+> `)
+	} else {
 	fmt.Print(`
 (1) Add Task
 (2) Edit Task
@@ -23,6 +31,7 @@ func MainMenu() {
 (9) Exit Memo
 
 > `)
+	}
 
 	_, err := fmt.Scanf("%d", &userInput)
 	if err != nil {
