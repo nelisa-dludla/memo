@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
 	"memo/database"
 	"memo/models"
+	"os"
 	"strings"
 	"time"
 
@@ -21,38 +23,31 @@ func RetrieveAllTasks() []models.Task {
 }
 
 func AddTask() {
-	var title, description, deadline_opt1 string
+	var taskName, userInput string
 	var taskDate time.Time
 	var task models.Task
 	color.Cyan("***** Memo - Add Task *****\n\n")
+	// Sentence reader
+	reader := bufio.NewReader(os.Stdin)
 	// Retrieve title
-	fmt.Printf("Enter a task title: ")
-	_, err := fmt.Scanln("%s", &title)
-	if err != nil {
-		color.Yellow("Invalid input. Input should be a string.")
-		return
-	}
-	// Retrieve description
-	fmt.Printf("Enter a task description: ")
-	_, err = fmt.Scanln("%s", &description)
+	fmt.Printf("Enter task: ")
+	taskName, err := reader.ReadString('\n')
 	if err != nil {
 		color.Yellow("Invalid input. Input should be a string.")
 		return
 	}
 	// Retrieve deadline
 	fmt.Printf("Is this task to be completed today? (Y/N): ")
-	fmt.Scanln()
-	_, err = fmt.Scanf("%s", &deadline_opt1)
+	_, err = fmt.Scanf("%s", &userInput)
 	if err != nil {
 		color.Yellow("Invalid input. Input should be a string.")
 		return
 	}
 	// Added information to task model
-	task.Title = title
-	task.Description = description
+	task.TaskName = taskName
 	task.Completed = false
 
-	if strings.ToLower(deadline_opt1) == "y" {
+	if strings.ToLower(userInput) == "y" {
 		now := time.Now()
 		date := now.Format("2006-01-02")
 		// Check if the date format has been entered correctly
@@ -61,7 +56,7 @@ func AddTask() {
 			color.Yellow("Invalid input. Date should be in the format YYYY-MM-DD.")
 		}
 		taskDate = parsedDate
-	} else if strings.ToLower(deadline_opt1) == "n" {
+	} else if strings.ToLower(userInput) == "n" {
 		// Retrieve date
 		var date string
 		fmt.Printf("Enter a date - (Format - YYYY-MM-DD): ")
@@ -84,7 +79,7 @@ func AddTask() {
 		return
 	}
 	// Check if the time format has been enter correctly
-	parsedTime, err := time.Parse("15:04", timeStr)
+	parsedTime, err := time.Parse("15-04", timeStr)
 	if err != nil {
 		color.Yellow("Invalid input. Time should be in the format HH-MM.")
 		return
@@ -103,11 +98,20 @@ func AddTask() {
 	color.Green("Task was added successfully.")
 }
 
-func EditTask(id int) {
+func EditTask() {
 	color.Cyan("***** Memo - Edit Task *****\n\n")
 	// Find task
 	var task models.Task
-	result := database.DB.Find(&task, id)
+	var taskId int
+	fmt.Print("Enter task id: ")
+	_, err := fmt.Scanf("%d", &taskId)
+	if err != nil {
+		color.Yellow("Invalid input. Task id should be an integer.")
+	}
+	fmt.Println("taskId: ", taskId)
+	result := database.DB.First(&task, taskId)
+	fmt.Println("task: ", task)
+	fmt.Println("result: ", result)
 	if result != nil {
 		color.Yellow("Task not found.")
 		return
@@ -115,55 +119,42 @@ func EditTask(id int) {
 
 	var userInput int
 	fmt.Print(`
-(1) Edit Title
-(2) Edit Description
-(3) Edit Deadline
+(1) Edit Task Name
+(2) Edit Deadline
 
 (9) Cancel
 
 > `)
 
-	_, err := fmt.Scanf("%d", &userInput)
+	_, err = fmt.Scanf("%d", &userInput)
 	if err != nil {
 		color.Yellow("Invalid Input.")
 	}
 
 	switch userInput {
 	case 1:
-		EditTitle(task)
+		EditTaskName(task)
 	case 2:
-		EditDescription(task)
-	case 3:
 		EditDeadline(task)
 	case 9:
 		return
 	default:
-		color.Yellow("Invalid Input. Enter (1) to Edit Title, (2) to Edit Description, (3) to Edit Deadline or (9) to Cancel.")
+		color.Yellow("Invalid Input. Enter (1) to Edit Title, (2) to Edit Deadline, or (9) to Cancel.")
 	}
 }
 
-func EditTitle(task models.Task) {
+func EditTaskName(task models.Task) {
+	// Sentence reader
+	reader := bufio.NewReader(os.Stdin)
 	// Retrieve new title
-	var newTitle string
+	var newTaskName string
 	fmt.Print("New title: ")
-	fmt.Scanln("%s", &newTitle)
+	newTaskName, _ = reader.ReadString('\n')
 
-	task.Title = newTitle
+	task.TaskName = newTaskName
 	database.DB.Save(&task)
 
 	color.Green("Title changed successfully.")
-}
-
-func EditDescription(task models.Task) {
-	// Retrieve new description
-	var newDescription string
-	fmt.Print("New description: ")
-	fmt.Scanln("%s", &newDescription)
-
-	task.Description = newDescription
-	database.DB.Save(&task)
-
-	color.Green("Description changed successfully.")
 }
 
 func EditDeadline(task models.Task) {
@@ -196,4 +187,26 @@ func EditDeadline(task models.Task) {
 	database.DB.Save(&task)
 
 	color.Green("Deadline changed successfully.")
+}
+
+func DeleteTask() {
+	color.Cyan("***** Memo - Delete Task *****\n\n")
+	// Find task
+	var task models.Task
+	var taskId int
+	fmt.Print("Enter task id: ")
+	_, err := fmt.Scanf("%d", &taskId)
+	if err != nil {
+		color.Yellow("Invalid input. Task id should be an integer.")
+	}
+
+	result := database.DB.Find(&task, taskId)
+	if result != nil {
+		color.Yellow("Task not found.")
+		return
+	}
+	// Delete task from database
+	database.DB.Delete(&task)
+	// Success message
+	color.Green("Task deleted successfully.")
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func MainMenu() {
-	color.Cyan("***** Memo - A lightweight todo list application *****\n\n")
+	color.Cyan("\n***** Memo - A lightweight todo list application *****\n\n")
 	//Retrieve tasks from database
 	tasks := RetrieveAllTasks()
 	DrawTable(tasks)
@@ -32,9 +32,9 @@ func MainMenu() {
 	case 1:
 		AddTask()
 	case 2:
-		fmt.Println("Edit task")
+		EditTask()
 	case 3:
-		fmt.Println("Delete task")
+		DeleteTask()
 	case 9:
 		color.Green("Closing Memo...")
 		os.Exit(0)

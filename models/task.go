@@ -8,8 +8,7 @@ import (
 
 type Task struct {
 	gorm.Model
-	Title string
-	Description string
+	TaskName string
 	Deadline time.Time
 	Completed bool
 }
