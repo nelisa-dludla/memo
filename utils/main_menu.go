@@ -30,7 +30,7 @@ func MainMenu() {
 
 	switch userInput {
 	case 1:
-		fmt.Println("Add task")
+		AddTask()
 	case 2:
 		fmt.Println("Edit task")
 	case 3:
