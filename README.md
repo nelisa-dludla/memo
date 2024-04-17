@@ -2,7 +2,7 @@
 
 Memo is a simple todo list CLI program built to help you stay organized and on top of your tasks.
 
-![Memo Main Menu](https://imgur.com/uWhciQX)
+![Memo Main Menu](https://i.imgur.com/uWhciQX.png)
 
 ## Features
 
@@ -69,7 +69,7 @@ go build
 
 Upon launching Memo, you'll be greeted with a list of your tasks, along with their due dates.
 
-![Memo Main Menu](https://imgur.com/b1aFGcj)
+![Memo Main Menu](https://i.imgur.com/b1aFGcj.png)
 
 6. Interact with Tasks:
 
