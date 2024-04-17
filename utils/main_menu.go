@@ -18,6 +18,7 @@ func MainMenu() {
 (1) Add Task
 (2) Edit Task
 (3) Delete Task
+(4) Mark Task as Completed
 
 (9) Exit Memo
 
@@ -35,6 +36,8 @@ func MainMenu() {
 		EditTask()
 	case 3:
 		DeleteTask()
+	case 4:
+		CompletedTask()
 	case 9:
 		color.Green("Closing Memo...")
 		os.Exit(0)

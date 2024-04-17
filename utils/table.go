@@ -12,14 +12,14 @@ func DrawTable(tasks []models.Task) {
 	// Create a writer
 	tableWriter := table.NewWriter()
 	// Append table header
-	tableWriter.AppendHeader(table.Row{"#", "Task", "Deadline", "Completed"})
+	tableWriter.AppendHeader(table.Row{"ID", "Task", "Deadline", "Completed"})
 	// Loop through results and append data to table
 	if len(tasks) < 1 {
 		tableWriter.AppendRow(table.Row{"You're all caught up for now."})
 		tableWriter.AppendRow(table.Row{"Enjoy your free time, or add new tasks to stay productive!"})
 	} else {
 		for _, task := range tasks {
-			tableWriter.AppendRow(table.Row{task.ID, task.TaskName, task.Deadline.Format("2006-01-01 15:02"), task.Completed})
+			tableWriter.AppendRow(table.Row{task.ID, task.TaskName, task.Deadline.Format("2006-01-02 15:04"), task.Completed})
 		}
 	}
 	// Render table

@@ -108,11 +108,8 @@ func EditTask() {
 	if err != nil {
 		color.Yellow("Invalid input. Task id should be an integer.")
 	}
-	fmt.Println("taskId: ", taskId)
 	result := database.DB.First(&task, taskId)
-	fmt.Println("task: ", task)
-	fmt.Println("result: ", result)
-	if result != nil {
+	if result.Error != nil {
 		color.Yellow("Task not found.")
 		return
 	}
@@ -177,7 +174,8 @@ func EditDeadline(task models.Task) {
 		return
 	}
 	// Check if the time format has been enter correctly
-	parsedTime, err := time.Parse("15:04", timeStr)
+	parsedTime, err := time.Parse("15-04", timeStr)
+	fmt.Println("parsedTime:", parsedTime)
 	if err != nil {
 		color.Yellow("Invalid input. Time should be in the format HH-MM.")
 	}
@@ -200,13 +198,36 @@ func DeleteTask() {
 		color.Yellow("Invalid input. Task id should be an integer.")
 	}
 
-	result := database.DB.Find(&task, taskId)
-	if result != nil {
+	result := database.DB.First(&task, taskId)
+	if result.Error != nil {
 		color.Yellow("Task not found.")
 		return
 	}
+	fmt.Println("The value of result:", result)
 	// Delete task from database
 	database.DB.Delete(&task)
 	// Success message
 	color.Green("Task deleted successfully.")
+}
+
+func CompletedTask() {
+	color.Cyan("***** Memo - Mark Task as Completed *****\n\n")
+	// Retrieve task id
+	var taskId int
+	fmt.Print("Enter task id: ")
+	_, err := fmt.Scanf("%d", &taskId)
+	if err != nil {
+		color.Yellow("Invalid input. Task id should be an integer.")
+	}
+	// Find task
+	var task models.Task
+	result := database.DB.Find(&task, taskId)
+	if result.Error != nil {
+		color.Yellow("Task not found.")
+		return
+	}
+	task.Completed = true
+	database.DB.Save(&task)
+
+	color.Green("Task #%d has been completed.", taskId)
 }
